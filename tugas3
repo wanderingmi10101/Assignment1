@@ -1,0 +1,220 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ */
+
+package com.mycompany.tugas2_3;
+
+/**
+ *
+ * @author ASUS
+ */  
+import java.util.ArrayList;
+import java.util.Scanner;
+
+
+
+// Abstract base class
+abstract class MenuItem {
+    private String name;
+    private double price;
+    private String category;
+
+    public MenuItem(String name, double price, String category) {
+        this.name = name;
+        this.price = price;
+        this.category = category;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    // Abstract method to be implemented by subclasses
+    public abstract void showMenu();
+}
+
+// Food class, subclass of MenuItem
+class Food extends MenuItem {
+    private String foodType;
+
+    public Food(String name, double price, String foodType) {
+        super(name, price, "Food");
+        this.foodType = foodType;
+    }
+
+    @Override
+    public void showMenu() {
+        System.out.println("Food: " + getName() + " | Type: " + foodType + " | Price: " + getPrice());
+    }
+}
+
+// Drink class, subclass of MenuItem
+class Drink extends MenuItem {
+    private String drinkType;
+
+    public Drink(String name, double price, String drinkType) {
+        super(name, price, "Drink");
+        this.drinkType = drinkType;
+    }
+
+    @Override
+    public void showMenu() {
+        System.out.println("Drink: " + getName() + " | Type: " + drinkType + " | Price: " + getPrice());
+    }
+}
+
+// Discount class, subclass of MenuItem
+class Discount extends MenuItem {
+    private double discount;
+
+    public Discount(String name, double price, double discount) {
+        super(name, price, "Discount");
+        this.discount = discount;
+    }
+
+    @Override
+    public void showMenu() {
+        System.out.println("Discount: " + getName() + " | Amount: " + discount + "% | Price: " + getPrice());
+    }
+}
+
+// Menu class to manage all menu items
+class Menu {
+    private ArrayList<MenuItem> menuItems;
+
+    public Menu() {
+        this.menuItems = new ArrayList<>();
+    }
+
+    public void addMenuItem(MenuItem item) {
+        menuItems.add(item);
+    }
+
+    public void displayMenu() {
+        for (MenuItem item : menuItems) {
+            item.showMenu();
+        }
+    }
+
+    public MenuItem getMenuItemByName(String itemName) {
+        for (MenuItem item : menuItems) {
+            if (item.getName().equalsIgnoreCase(itemName)) {
+                return item;
+            }
+        }
+        return null;
+    }
+}
+
+// Order class to record customer orders
+class Order {
+    private ArrayList<MenuItem> orderedItems;
+
+    public Order() {
+        this.orderedItems = new ArrayList<>();
+    }
+
+    public void addOrderedItem(MenuItem item) {
+        orderedItems.add(item);
+    }
+
+    public void displayOrder() {
+        System.out.println("Customer Order:");
+        double totalCost = 0;
+        for (MenuItem item : orderedItems) {
+            item.showMenu();
+            totalCost += item.getPrice();
+        }
+        System.out.println("Total Cost: " + totalCost);
+    }
+}
+
+public class tugas 2_3 {
+    private static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Menu restaurantMenu = new Menu();
+        Order customerOrder = new Order();
+
+        while (true) {
+            System.out.println("\nMain Menu:");
+            System.out.println("1. Add new item to the menu");
+            System.out.println("2. Display restaurant menu");
+            System.out.println("3. Receive customer orders");
+            System.out.println("4. Display customer order receipt");
+            System.out.println("5. Exit");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline character
+
+            switch (choice) {
+                case 1:
+                    System.out.println("\nAdd New Item to the Menu:");
+                    System.out.print("Enter item name: ");
+                    String itemName = scanner.nextLine();
+                    System.out.print("Enter item price: ");
+                    double itemPrice = scanner.nextDouble();
+                    scanner.nextLine(); // Consume the newline character
+
+                    System.out.print("Enter item category (Food/Drink/Discount): ");
+                    String itemCategory = scanner.nextLine();
+
+                    if ("Food".equalsIgnoreCase(itemCategory)) {
+                        System.out.print("Enter food type: ");
+                        String foodType = scanner.nextLine();
+                        restaurantMenu.addMenuItem(new Food(itemName, itemPrice, foodType));
+                    } else if ("Drink".equalsIgnoreCase(itemCategory)) {
+                        System.out.print("Enter drink type: ");
+                        String drinkType = scanner.nextLine();
+                        restaurantMenu.addMenuItem(new Drink(itemName, itemPrice, drinkType));
+                    } else if ("Discount".equalsIgnoreCase(itemCategory)) {
+                        System.out.print("Enter discount amount (%): ");
+                        double discount = scanner.nextDouble();
+                        restaurantMenu.addMenuItem(new Discount(itemName, itemPrice, discount));
+                    } else {
+                        System.out.println("Invalid category.");
+                    }
+                    break;
+
+                case 2:
+                    System.out.println("\nRestaurant Menu:");
+                    restaurantMenu.displayMenu();
+                    break;
+
+                case 3:
+                    System.out.println("\nReceive Customer Orders:");
+                    System.out.print("Enter item name to order: ");
+                    String orderedItemName = scanner.nextLine();
+                    MenuItem orderedItem = restaurantMenu.getMenuItemByName(orderedItemName);
+
+                    if (orderedItem != null) {
+                        customerOrder.addOrderedItem(orderedItem);
+                        System.out.println(orderedItemName + " added to the order.");
+                    } else {
+                        System.out.println("Item not found in the menu.");
+                    }
+                    break;
+
+                case 4:
+                    System.out.println("\nDisplay Customer Order Receipt:");
+                    customerOrder.displayOrder();
+                    break;
+
+                case 5:
+                    System.out.println("Exiting the program.");
+                    System.exit(0);
+                    break;
+
+                default:
+                    System.out.println("Invalid choice. Please enter a valid option.");
+            }
+        }
+    }
+}
